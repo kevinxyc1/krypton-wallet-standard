@@ -12,7 +12,7 @@ export type SolmateFeature = {
 export declare class SolmateWallet implements Wallet {
     #private;
     get version(): "1.0.0";
-    get name(): "Solmate";
+    get name(): "Krypton";
     get icon(): `data:image/svg+xml;base64,${string}` | `data:image/webp;base64,${string}` | `data:image/png;base64,${string}` | `data:image/gif;base64,${string}`;
     get chains(): ("solana:mainnet" | "solana:devnet" | "solana:testnet" | "solana:localnet")[];
     get features(): StandardConnectFeature & StandardDisconnectFeature & StandardEventsFeature & SolanaSignAndSendTransactionFeature & SolanaSignTransactionFeature & SolanaSignMessageFeature & SolmateFeature;

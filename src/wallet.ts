@@ -46,7 +46,7 @@ export type SolmateFeature = {
 export class SolmateWallet implements Wallet {
     readonly #listeners: { [E in StandardEventsNames]?: StandardEventsListeners[E][] } = {};
     readonly #version = '1.0.0' as const;
-    readonly #name = 'Solmate' as const;
+    readonly #name = 'Krypton' as const;
     readonly #icon = icon;
     #account: SolmateWalletAccount | null = null;
     readonly #solmate: Solmate;
