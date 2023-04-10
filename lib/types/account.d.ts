@@ -1,5 +1,5 @@
 import type { WalletAccount } from '@wallet-standard/base';
-export declare class SolmateWalletAccount implements WalletAccount {
+export declare class KryptonWalletAccount implements WalletAccount {
     #private;
     get address(): string;
     get publicKey(): Uint8Array;
