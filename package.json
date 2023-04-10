@@ -1,8 +1,8 @@
 {
-    "version": "0.0.7",
-    "name": "solmate-wallet-standard",
+    "version": "0.0.8",
+    "name": "krypton-wallet-standard",
     "author": "Solana Maintainers <maintainers@solana.foundation>",
-    "repository": "https://github.com/kevinxyc1/solmate-wallet-standard",
+    "repository": "https://github.com/kevinxyc1/krypton-wallet-standard",
     "license": "Apache-2.0",
     "engines": {
         "node": ">=16"

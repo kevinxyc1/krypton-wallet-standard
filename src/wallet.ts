@@ -28,28 +28,28 @@ import {
     type StandardEventsOnMethod,
 } from '@wallet-standard/features';
 import bs58 from 'bs58';
-import { SolmateWalletAccount } from './account.js';
+import { KryptonWalletAccount } from './account.js';
 import { icon } from './icon.js';
 import type { SolanaChain } from './solana.js';
 import { isSolanaChain, SOLANA_CHAINS } from './solana.js';
 import { bytesEqual } from './util.js';
-import type { Solmate } from './window.js';
+import type { Krypton } from './window.js';
 
-export const SolmateNamespace = 'solmate:';
+export const KryptonNamespace = 'krypton:';
 
-export type SolmateFeature = {
-    [SolmateNamespace]: {
-        solmate: Solmate;
+export type KryptonFeature = {
+    [KryptonNamespace]: {
+        krypton: Krypton;
     };
 };
 
-export class SolmateWallet implements Wallet {
+export class KryptonWallet implements Wallet {
     readonly #listeners: { [E in StandardEventsNames]?: StandardEventsListeners[E][] } = {};
     readonly #version = '1.0.0' as const;
     readonly #name = 'Krypton' as const;
     readonly #icon = icon;
-    #account: SolmateWalletAccount | null = null;
-    readonly #solmate: Solmate;
+    #account: KryptonWalletAccount | null = null;
+    readonly #krypton: Krypton;
 
     get version() {
         return this.#version;
@@ -73,7 +73,7 @@ export class SolmateWallet implements Wallet {
         SolanaSignAndSendTransactionFeature &
         SolanaSignTransactionFeature &
         SolanaSignMessageFeature &
-        SolmateFeature {
+        KryptonFeature {
         return {
             [StandardConnect]: {
                 version: '1.0.0',
@@ -101,8 +101,8 @@ export class SolmateWallet implements Wallet {
                 version: '1.0.0',
                 signMessage: this.#signMessage,
             },
-            [SolmateNamespace]: {
-                solmate: this.#solmate,
+            [KryptonNamespace]: {
+                krypton: this.#krypton,
             },
         };
     }
@@ -111,16 +111,16 @@ export class SolmateWallet implements Wallet {
         return this.#account ? [this.#account] : [];
     }
 
-    constructor(solmate: Solmate) {
-        if (new.target === SolmateWallet) {
+    constructor(krypton: Krypton) {
+        if (new.target === KryptonWallet) {
             Object.freeze(this);
         }
 
-        this.#solmate = solmate;
+        this.#krypton = krypton;
 
-        solmate.on('connect', this.#connected, this);
-        solmate.on('disconnect', this.#disconnected, this);
-        solmate.on('accountChanged', this.#reconnected, this);
+        krypton.on('connect', this.#connected, this);
+        krypton.on('disconnect', this.#disconnected, this);
+        krypton.on('accountChanged', this.#reconnected, this);
 
         this.#connected();
     }
@@ -140,14 +140,14 @@ export class SolmateWallet implements Wallet {
     }
 
     #connected = () => {
-        const address = this.#solmate.publicKey?.toBase58();
+        const address = this.#krypton.publicKey?.toBase58();
         if (address) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            const publicKey = this.#solmate.publicKey!.toBytes();
+            const publicKey = this.#krypton.publicKey!.toBytes();
 
             const account = this.#account;
             if (!account || account.address !== address || !bytesEqual(account.publicKey, publicKey)) {
-                this.#account = new SolmateWalletAccount({ address, publicKey });
+                this.#account = new KryptonWalletAccount({ address, publicKey });
                 this.#emit('change', { accounts: this.accounts });
             }
         }
@@ -161,7 +161,7 @@ export class SolmateWallet implements Wallet {
     };
 
     #reconnected = () => {
-        if (this.#solmate.publicKey) {
+        if (this.#krypton.publicKey) {
             this.#connected();
         } else {
             this.#disconnected();
@@ -170,7 +170,7 @@ export class SolmateWallet implements Wallet {
 
     #connect: StandardConnectMethod = async ({ silent } = {}) => {
         if (!this.#account) {
-            await this.#solmate.connect(silent ? { onlyIfTrusted: true } : undefined);
+            await this.#krypton.connect(silent ? { onlyIfTrusted: true } : undefined);
         }
 
         this.#connected();
@@ -179,7 +179,7 @@ export class SolmateWallet implements Wallet {
     };
 
     #disconnect: StandardDisconnectMethod = async () => {
-        await this.#solmate.disconnect();
+        await this.#krypton.disconnect();
     };
 
     #signAndSendTransaction: SolanaSignAndSendTransactionMethod = async (...inputs) => {
@@ -194,7 +194,7 @@ export class SolmateWallet implements Wallet {
             if (account !== this.#account) throw new Error('invalid account');
             if (!isSolanaChain(chain)) throw new Error('invalid chain');
 
-            const { signature } = await this.#solmate.signAndSendTransaction(
+            const { signature } = await this.#krypton.signAndSendTransaction(
                 VersionedTransaction.deserialize(transaction),
                 {
                     preflightCommitment,
@@ -225,7 +225,7 @@ export class SolmateWallet implements Wallet {
             if (account !== this.#account) throw new Error('invalid account');
             if (chain && !isSolanaChain(chain)) throw new Error('invalid chain');
 
-            const signedTransaction = await this.#solmate.signTransaction(VersionedTransaction.deserialize(transaction));
+            const signedTransaction = await this.#krypton.signTransaction(VersionedTransaction.deserialize(transaction));
 
             outputs.push({ signedTransaction: signedTransaction.serialize() });
         } else if (inputs.length > 1) {
@@ -244,7 +244,7 @@ export class SolmateWallet implements Wallet {
 
             const transactions = inputs.map(({ transaction }) => Transaction.from(transaction));
 
-            const signedTransactions = await this.#solmate.signAllTransactions(transactions);
+            const signedTransactions = await this.#krypton.signAllTransactions(transactions);
 
             outputs.push(
                 ...signedTransactions.map((signedTransaction) => ({ signedTransaction: signedTransaction.serialize() }))
@@ -264,7 +264,7 @@ export class SolmateWallet implements Wallet {
             const { message, account } = inputs[0]!;
             if (account !== this.#account) throw new Error('invalid account');
 
-            const { signature } = await this.#solmate.signMessage(message);
+            const { signature } = await this.#krypton.signMessage(message);
 
             outputs.push({ signedMessage: message, signature });
         } else if (inputs.length > 1) {

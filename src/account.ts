@@ -11,7 +11,7 @@ import { SOLANA_CHAINS } from './solana.js';
 const chains = SOLANA_CHAINS;
 const features = [SolanaSignAndSendTransaction, SolanaSignTransaction, SolanaSignMessage] as const;
 
-export class SolmateWalletAccount implements WalletAccount {
+export class KryptonWalletAccount implements WalletAccount {
     readonly #address: WalletAccount['address'];
     readonly #publicKey: WalletAccount['publicKey'];
     readonly #chains: WalletAccount['chains'];
@@ -44,7 +44,7 @@ export class SolmateWalletAccount implements WalletAccount {
     }
 
     constructor({ address, publicKey, label, icon }: Omit<WalletAccount, 'chains' | 'features'>) {
-        if (new.target === SolmateWalletAccount) {
+        if (new.target === KryptonWalletAccount) {
             Object.freeze(this);
         }
 

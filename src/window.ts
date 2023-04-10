@@ -1,17 +1,17 @@
 import type { PublicKey, SendOptions, Transaction, TransactionSignature, VersionedTransaction } from '@solana/web3.js';
 
-export interface SolmateEvent {
+export interface KryptonEvent {
     connect(...args: unknown[]): unknown;
     disconnect(...args: unknown[]): unknown;
     accountChanged(...args: unknown[]): unknown;
 }
 
-export interface SolmateEventEmitter {
-    on<E extends keyof SolmateEvent>(event: E, listener: SolmateEvent[E], context?: any): void;
-    off<E extends keyof SolmateEvent>(event: E, listener: SolmateEvent[E], context?: any): void;
+export interface KryptonEventEmitter {
+    on<E extends keyof KryptonEvent>(event: E, listener: KryptonEvent[E], context?: any): void;
+    off<E extends keyof KryptonEvent>(event: E, listener: KryptonEvent[E], context?: any): void;
 }
 
-export interface Solmate extends SolmateEventEmitter {
+export interface Krypton extends KryptonEventEmitter {
     publicKey: PublicKey | null;
     connect(options?: { onlyIfTrusted?: boolean }): Promise<{ publicKey: PublicKey }>;
     disconnect(): Promise<void>;
